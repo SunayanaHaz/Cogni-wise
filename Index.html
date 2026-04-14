@@ -1,1 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CogniWise — Brain Health Co-Pilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#030c17;
+      --bg1:#071628;
+      --bg2:#0a1d32;
+      --bg3:#11283f;
+      --cyan:#00d4ff;
+      --cyan2:rgba(0,212,255,.14);
+      --cyan3:rgba(0,212,255,.06);
+      --green:#00e5a0;
+      --amber:#ffb347;
+      --red:#ff4560;
+      --purple:#a78bfa;
+      --border:rgba(0,212,255,.12);
+      --bordhi:rgba(0,212,255,.35);
+      --t1:#e8f4ff;
+      --t2:#7ba0bc;
+      --t3:#35556f;
+      --r-sm:10px;
+      --r-md:16px;
+      --r-lg:22px;
+      --shadow:0 18px 40px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'IBM Plex Sans',sans-serif;
+      background:radial-gradient(circle at 50% 15%, rgba(0,212,255,.08), transparent 28%), var(--bg);
+      color:var(--t1);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .grid-bg,.radial-bg{position:fixed;inset:0;pointer-events:none}
+    .grid-bg{
+      background-image:linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+      background-size:42px 42px;
+      z-index:0;
+    }
+    .radial-bg{
+      background:radial-gradient(ellipse 70% 55% at 50% 18%, rgba(0,212,255,.06), transparent 72%);
+      z-index:0;
+    }
+    .orb{font-family:'Orbitron',monospace}
+    .mono{font-family:'IBM Plex Mono',monospace}
+    .page{display:none;position:relative;z-index:1;min-height:100vh}
+    .page.show{display:flex;flex-direction:column}
+    .card{
+      background:rgba(7,22,40,.9);
+      border:1px solid var(--border);
+      border-radius:var(--r-lg);
+      box-shadow:var(--shadow);
+    }
+    .btn-cta,.btn-ghost,.nav-btn,.pill-btn{
+      cursor:pointer;
+      transition:.22s ease;
+      border-radius:999px;
+      font-family:'IBM Plex Mono',monospace;
+      letter-spacing:1.5px;
+      text-transform:uppercase;
+    }
+    .btn-cta{
+      border:none;
+      background:linear-gradient(135deg, var(--cyan), #59e5ff);
+      color:#02111d;
+      font-weight:700;
+      padding:14px 24px;
+      font-size:12px;
+    }
+    .btn-cta:hover{transform:translateY(-1px);filter:brightness(1.08)}
+    .btn-ghost{
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--t2);
+      padding:13px 22px;
+      font-size:11px;
+    }
+    .btn-ghost:hover{border-color:var(--bordhi);color:var(--t1);background:var(--cyan3)}
 
+    /* landing */
+    .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
+    .hero-inner{max-width:880px}
+    .eyebrow{display:inline-block;padding:7px 16px;border:1px solid var(--bordhi);border-radius:999px;background:var(--cyan2);color:var(--cyan);font-size:10px;letter-spacing:4px;text-transform:uppercase;margin-bottom:24px}
+    h1{font-size:clamp(34px,6vw,68px);line-height:1.03;letter-spacing:1px;margin-bottom:16px}
+    h1 .accent{color:var(--cyan)}
+    .hero p{max-width:700px;margin:0 auto 30px;color:var(--t2);font-size:17px;line-height:1.8}
+    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .stats{margin:54px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:760px}
+    .stat{padding:22px;background:rgba(10,29,50,.74);border:1px solid var(--border);border-radius:18px}
+    .stat .n{font-family:'Orbitron',monospace;font-size:30px;color:var(--cyan);margin-bottom:6px}
+    .stat .l{font-size:12px;color:var(--t2);line-height:1.6}
+    .edu{max-width:1100px;margin:0 auto;padding:0 24px 84px}
+    .divider{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .divider span{font-size:10px;color:var(--t3);letter-spacing:3px;text-transform:uppercase}
+    .section-head{text-align:center;max-width:720px;margin:0 auto 38px}
+    .section-head h2{font-size:clamp(24px,3.5vw,38px);margin-bottom:10px}
+    .section-head p{color:var(--t2);line-height:1.8}
+    .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .pillar{padding:24px 20px;position:relative;overflow:hidden}
+    .pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--cyan)}
+    .pillar:nth-child(3)::before{background:var(--purple)}
+    .pillar:nth-child(4)::before{background:var(--amber)}
+    .pillar .i{font-size:30px;margin-bottom:14px}
+    .pillar h3{font-family:'Orbitron',monospace;font-size:14px;margin-bottom:8px}
+    .pillar p{font-size:12px;color:var(--t2);line-height:1.75}
+
+    /* login */
+    .center-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .auth{width:100%;max-width:430px;padding:28px}
+    .brand{text-align:center;margin-bottom:22px}
+    .brand-top{display:inline-flex;align-items:center;gap:10px;margin-bottom:8px}
+    .brand-name{font-size:18px;color:var(--cyan);letter-spacing:3px}
+    .brand-sub{font-size:9px;color:var(--t2);letter-spacing:4px;text-transform:uppercase}
+    .auth h2{font-size:15px;letter-spacing:2px;margin-bottom:6px}
+    .auth .sub{font-size:13px;color:var(--t2);margin-bottom:22px}
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:10px;letter-spacing:2px;color:var(--t2);text-transform:uppercase;margin-bottom:7px;font-family:'IBM Plex Mono',monospace}
+    .field input{
+      width:100%;padding:13px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--t1);outline:none;font-size:14px
+    }
+    .field input:focus{border-color:var(--cyan)}
+    .auth .btn-cta,.auth .btn-ghost{width:100%}
+    .or{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--t3);font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+    .or:before,.or:after{content:'';flex:1;height:1px;background:var(--border)}
+
+    /* assessment */
+    .assessment-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .assessment{width:100%;max-width:520px;padding:28px}
+    .progress{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+    .progress div{height:4px;background:var(--border);border-radius:3px}
+    .progress div.on{background:var(--cyan)}
+    .step-meta{display:flex;justify-content:space-between;color:var(--t3);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;font-family:'IBM Plex Mono',monospace}
+    .qstep{display:none}
+    .qstep.show{display:block}
+    .qstep .emoji{font-size:24px;margin-bottom:8px}
+    .qstep h3{font-size:15px;letter-spacing:2px;margin-bottom:6px}
+    .qstep p{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:18px}
+    .range-label{font-size:10px;letter-spacing:2px;color:var(--t2);text-transform:uppercase;margin-bottom:8px;font-family:'IBM Plex Mono',monospace}
+    input[type=range]{width:100%;accent-color:var(--cyan)}
+    .range-row{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+    .range-val{min-width:30px;text-align:right;font-family:'Orbitron',monospace;font-size:20px;color:var(--cyan)}
+    .range-hint{display:flex;justify-content:space-between;color:var(--t3);font-size:9px;letter-spacing:1px;margin-bottom:16px;font-family:'IBM Plex Mono',monospace}
+    .opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .opt{background:var(--bg2);border:1px solid var(--border);color:var(--t2);padding:12px;border-radius:12px;text-align:left;font-size:12px}
+    .opt.on{background:var(--cyan2);border-color:var(--cyan);color:var(--cyan)}
+    .qnav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+    .qnav button{flex:1}
+
+    /* app */
+    #appHeader{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:rgba(3,12,23,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+    .header-left{display:flex;align-items:center;gap:10px}
+    .header-logo{color:var(--cyan);font-size:16px;letter-spacing:3px}
+    .header-sub{color:var(--t2);font-size:8px;letter-spacing:3px;text-transform:uppercase}
+    .header-right{display:flex;align-items:center;gap:12px}
+    .live{display:flex;align-items:center;gap:7px;color:var(--t2);font-size:10px;letter-spacing:1px}
+    .live .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(0,229,160,.4);animation:pulse 2s infinite}
+    @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(0,229,160,0)}}
+    .top-icon{position:relative;border:1px solid var(--border);background:transparent;padding:8px 10px;border-radius:10px;color:var(--t2)}
+    .top-icon:hover{border-color:var(--bordhi);background:var(--cyan3);color:var(--t1)}
+    .badge-count{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:50%;background:var(--red);font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace}
+    .app-shell{display:grid;grid-template-columns:68px 1fr;min-height:calc(100vh - 61px)}
+    .sidebar{border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:18px 0;gap:8px;background:rgba(7,22,40,.45)}
+    .nav-btn{width:44px;height:44px;border:1px solid transparent;background:transparent;color:var(--t2);font-size:18px}
+    .nav-btn.active,.nav-btn:hover{background:var(--cyan2);border-color:var(--cyan);color:var(--cyan)}
+    .main{padding:24px 26px 40px}
+    .tab{display:none}
+    .tab.show{display:block}
+    .tab-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .tab-title h2{font-size:26px;letter-spacing:1px}
+    .tab-title p{color:var(--t2);font-size:13px;line-height:1.7;max-width:620px}
+    .dashboard{display:grid;grid-template-columns:320px 1fr;gap:18px}
+    .score-panel{padding:26px;display:flex;flex-direction:column;align-items:center}
+    .score-status{padding:6px 14px;border-radius:999px;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;font-family:'IBM Plex Mono',monospace}
+    .score-status.ok{background:rgba(0,229,160,.12);border:1px solid rgba(0,229,160,.25);color:var(--green)}
+    .score-status.warn{background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.25);color:var(--amber)}
+    .score-status.crit{background:rgba(255,69,96,.12);border:1px solid rgba(255,69,96,.25);color:var(--red)}
+    .ring{position:relative;width:220px;height:220px;margin-bottom:18px}
+    .ring svg{transform:rotate(-90deg)}
+    .ring-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:12}
+    .ring-fill{fill:none;stroke:var(--cyan);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .9s ease, stroke .3s}
+    .ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .ring-score{font-size:52px;line-height:1;font-family:'Orbitron',monospace}
+    .ring-sub{font-size:10px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-top:6px}
+    .ai-box{padding:14px 16px;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.18);border-radius:14px;width:100%}
+    .ai-box .lbl{font-size:10px;color:var(--purple);letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:8px}
+    .ai-box p{font-size:12px;color:var(--t2);line-height:1.75}
+    .score-minis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;margin-top:12px}
+    .mini{padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:12px}
+    .mini .l{font-size:9px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
+    .mini .v{font-size:18px;font-family:'Orbitron',monospace}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .vital{padding:18px;position:relative;overflow:hidden}
+    .vital::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cyan)}
+    .vital:nth-child(2)::before{background:var(--green)}
+    .vital:nth-child(3)::before{background:var(--amber)}
+    .vital:nth-child(4)::before{background:var(--purple)}
+    .vital .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .vital .lbl{font-size:9px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+    .vital .state{font-size:8px;padding:3px 8px;border-radius:999px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase}
+    .vital .state.ok{background:rgba(0,229,160,.12);color:var(--green)}
+    .vital .state.warn{background:rgba(255,179,71,.12);color:var(--amber)}
+    .vital .state.crit{background:rgba(255,69,96,.12);color:var(--red)}
+    .vital .value{font-family:'Orbitron',monospace;font-size:28px;margin-bottom:4px}
+    .vital .unit{color:var(--t2);font-size:10px}
+    .bars{margin-top:18px;padding:22px}
+    .bar-row{display:grid;grid-template-columns:120px 1fr 42px;gap:10px;align-items:center;margin-bottom:14px}
+    .bar-row .l{font-size:10px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+    .track{height:7px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden}
+    .fill{height:100%;background:linear-gradient(90deg,var(--cyan),#6ee8ff);border-radius:6px}
+    .fill.green{background:linear-gradient(90deg,var(--green),#6af0c0)}
+    .fill.amber{background:linear-gradient(90deg,var(--amber),#ffd08f)}
+    .fill.purple{background:linear-gradient(90deg,var(--purple),#d1b8ff)}
+    .bar-row .n{font-size:10px;color:var(--t1);text-align:right;font-family:'IBM Plex Mono',monospace}
+    .actions,.alerts-list{display:flex;flex-direction:column;gap:10px}
+    .action,.alert{padding:15px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px}
+    .action h4,.alert h4{font-size:13px;margin-bottom:4px}
+    .action p,.alert p{font-size:12px;color:var(--t2);line-height:1.7}
+    .action .tag,.alert .tag{display:inline-block;margin-top:8px;font-size:9px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+    .hydr-grid{display:grid;grid-template-columns:260px 1fr;gap:18px}
+    .bottle-card,.panel{padding:22px}
+    .bottle-svg{display:block;margin:0 auto 10px}
+    .bottle-num{text-align:center;font-family:'Orbitron',monospace;font-size:28px;color:var(--cyan);margin-bottom:4px}
+    .bottle-sub{text-align:center;font-size:10px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:14px}
+    .button-row{display:flex;flex-wrap:wrap;gap:8px}
+    .pill-btn{background:var(--bg2);border:1px solid var(--border);color:var(--t2);padding:8px 13px;font-size:10px}
+    .pill-btn:hover{border-color:var(--cyan);background:var(--cyan2);color:var(--cyan)}
+    .timeline{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+    .tl{display:grid;grid-template-columns:48px 1fr 16px;gap:10px;align-items:center}
+    .tl .t{font-size:10px;color:var(--t3);font-family:'IBM Plex Mono',monospace}
+    .tl .x{font-size:12px;color:var(--t2)}
+    .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--cyan)}
+    .dot.met{background:var(--cyan)}
+    .alert-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .filter-chip{padding:7px 12px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--t2);font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;cursor:pointer}
+    .filter-chip.on{border-color:var(--cyan);background:var(--cyan2);color:var(--cyan)}
+
+    /* pitch */
+    #pitchOverlay{display:none;position:fixed;inset:0;background:rgba(3,12,23,.97);z-index:1000;overflow:auto}
+    #pitchOverlay.show{display:block}
+    .pitch-close{position:fixed;top:18px;right:22px;z-index:2}
+    .pitch-inner{max-width:900px;margin:0 auto;padding:54px 24px 70px}
+    .slide{padding:24px 0 44px;border-bottom:1px solid var(--border)}
+    .slide:last-child{border-bottom:none}
+    .pitch-tag{font-size:10px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:10px}
+    .pitch-h{font-size:34px;line-height:1.2;margin-bottom:12px}
+    .pitch-p{font-size:15px;color:var(--t2);line-height:1.85;max-width:760px}
+    .pitch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    .pitch-stat,.pitch-box{padding:20px}
+    .pitch-stat .n{font-size:32px;color:var(--cyan);font-family:'Orbitron',monospace;margin-bottom:6px}
+    .pitch-stat .l,.pitch-box p{font-size:12px;color:var(--t2);line-height:1.7}
+    .pitch-box h3{font-size:12px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:8px}
+
+    @media(max-width:980px){
+      .pillars{grid-template-columns:repeat(2,1fr)}
+      .dashboard,.hydr-grid,.pitch-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:720px){
+      .stats{grid-template-columns:1fr}
+      .app-shell{grid-template-columns:58px 1fr}
+      .grid-2,.opts{grid-template-columns:1fr}
+      .bar-row{grid-template-columns:92px 1fr 36px}
+    }
+    @media(max-width:520px){
+      .pillars{grid-template-columns:1fr}
+      .main{padding:18px}
+      .score-minis{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="radial-bg"></div>
+
+  <section class="page show" id="page-landing">
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">Brain Readiness · No New Hardware</div>
+        <h1 class="orb">The Signals Were Already There.<br><span class="accent">CogniWise Connects Them.</span></h1>
+        <p>CogniWise is a brain health co-pilot that turns sleep, stress, hydration, blood pressure, and cognitive load into one daily readiness score with simple actions you can take before performance drops.</p>
+        <div class="hero-actions">
+          <button class="btn-cta" onclick="showPage('page-login')">Start Assessment →</button>
+          <button class="btn-ghost" onclick="openPitch()">View Pitch Deck</button>
+        </div>
+        <div class="stats">
+          <div class="stat card"><div class="n">90s</div><div class="l">Daily check-in designed to feel fast, not clinical.</div></div>
+          <div class="stat card"><div class="n">1</div><div class="l">Unified CogniScore from multiple real-life signals.</div></div>
+          <div class="stat card"><div class="n">0</div><div class="l">Extra devices required to experience the MVP.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="edu">
+      <div class="divider"><span>Understanding Your Brain Health</span></div>
+      <div class="section-head">
+        <h2 class="orb">Develop a New Sense for Your Brain</h2>
+        <p>CogniWise helps users notice invisible patterns before they become burnout, brain fog, or bad decision-making days.</p>
+      </div>
+      <div class="pillars">
+        <div class="pillar card"><div class="i">🧠</div><h3>Brain Circulation</h3><p>Blood pressure and vascular strain influence mental clarity, resilience, and long-term brain health.</p></div>
+        <div class="pillar card"><div class="i">💧</div><h3>Hydration</h3><p>Mild dehydration affects attention, mood, and cognitive efficiency faster than most people realise.</p></div>
+        <div class="pillar card"><div class="i">🧘</div><h3>Stress Load</h3><p>Stress changes executive function and recovery, especially when paired with poor sleep and overload.</p></div>
+        <div class="pillar card"><div class="i">⚡</div><h3>Cognitive Load</h3><p>Meeting density and task switching drain working memory and reduce your best thinking window.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-login">
+    <div class="center-wrap">
+      <div class="auth card">
+        <div class="brand">
+          <div class="brand-top"><span class="orb brand-name">COGNIWISE</span></div>
+          <div class="mono brand-sub">Keep Your Brain Sharp and Healthy</div>
+        </div>
+        <h2 class="orb">WELCOME BACK</h2>
+        <div class="sub">Sign in to access your brain health profile.</div>
+        <div class="field"><label>Email</label><input id="loginEmail" type="email" placeholder="you@example.com"></div>
+        <div class="field"><label>Password</label><input id="loginPass" type="password" placeholder="••••••••"></div>
+        <button class="btn-cta" onclick="showPage('page-q')">Sign In</button>
+        <div class="or">or</div>
+        <button class="btn-ghost" onclick="showPage('page-q')">Demo / Guest Mode</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-q">
+    <div class="assessment-wrap">
+      <div class="assessment card">
+        <div class="progress" id="prog"></div>
+        <div class="step-meta"><span id="stepCount">Step 1 of 4</span><span id="stepName">Sleep</span></div>
+
+        <div class="qstep show" data-step="0">
+          <div class="emoji">😴</div>
+          <h3 class="orb">SLEEP QUALITY</h3>
+          <p>Last night's sleep shapes memory, focus, and stress tolerance for the entire day.</p>
+          <div class="range-label">Hours slept</div>
+          <div class="range-row"><input type="range" min="2" max="12" step="0.5" value="7" id="sleepHours"><div class="range-val" id="sleepHoursVal">7</div></div>
+          <div class="range-hint"><span>2h</span><span>7h</span><span>12h</span></div>
+          <div class="range-label">Sleep quality</div>
+          <div class="opts" id="sleepOpts">
+            <button class="opt" data-group="sleepQuality" data-value="2">😫 Very poor</button>
+            <button class="opt" data-group="sleepQuality" data-value="5">😐 Okay</button>
+            <button class="opt on" data-group="sleepQuality" data-value="7">🙂 Good</button>
+            <button class="opt" data-group="sleepQuality" data-value="10">😊 Excellent</button>
+          </div>
+        </div>
+
+        <div class="qstep" data-step="1">
+          <div class="emoji">⚡</div>
+          <h3 class="orb">ENERGY & STRESS</h3>
+          <p>These subjective signals are strong predictors of daily cognitive performance.</p>
+          <div class="range-label">Energy level</div>
+          <div class="range-row"><input type="range" min="1" max="10" step="1" value="6" id="energy"><div class="range-val" id="energyVal">6</div></div>
+          <div class="range-hint"><span>Drained</span><span>Neutral</span><span>Vibrant</span></div>
+          <div class="range-label">Perceived stress</div>
+          <div class="range-row"><input type="range" min="1" max="10" step="1" value="4" id="stress"><div class="range-val" id="stressVal">4</div></div>
+          <div class="range-hint"><span>Calm</span><span>Moderate</span><span>High</span></div>
+        </div>
+
+        <div class="qstep" data-step="2">
+          <div class="emoji">💧</div>
+          <h3 class="orb">PHYSICAL STATE</h3>
+          <p>Hydration and movement are two of the most underrated brain health levers.</p>
+          <div class="range-label">Water intake so far</div>
+          <div class="opts" id="hydOpts">
+            <button class="opt" data-group="hydration" data-value="2">🏜️ Barely any</button>
+            <button class="opt" data-group="hydration" data-value="5">🥤 1–2 glasses</button>
+            <button class="opt on" data-group="hydration" data-value="7">💧 3–5 glasses</button>
+            <button class="opt" data-group="hydration" data-value="10">🌊 6+ glasses</button>
+          </div>
+          <div class="range-label">Activity in past 24 hours</div>
+          <div class="opts" id="actOpts">
+            <button class="opt" data-group="activity" data-value="2">🛋️ Sedentary</button>
+            <button class="opt on" data-group="activity" data-value="5">🚶 Light</button>
+            <button class="opt" data-group="activity" data-value="7">🏃 Moderate</button>
+            <button class="opt" data-group="activity" data-value="10">🔥 High</button>
+          </div>
+        </div>
+
+        <div class="qstep" data-step="3">
+          <div class="emoji">📅</div>
+          <h3 class="orb">TODAY'S LOAD</h3>
+          <p>Calendar pressure and task density help predict how much working memory you will burn today.</p>
+          <div class="range-label">Meeting / task load</div>
+          <div class="range-row"><input type="range" min="1" max="10" step="1" value="7" id="load"><div class="range-val" id="loadVal">7</div></div>
+          <div class="range-hint"><span>Light</span><span>Busy</span><span>Overloaded</span></div>
+          <div class="range-label">How focused do you feel right now?</div>
+          <div class="range-row"><input type="range" min="1" max="10" step="1" value="6" id="focus"><div class="range-val" id="focusVal">6</div></div>
+          <div class="range-hint"><span>Foggy</span><span>Okay</span><span>Sharp</span></div>
+        </div>
+
+        <div class="qnav">
+          <button class="btn-ghost" id="prevBtn" onclick="changeStep(-1)">Back</button>
+          <button class="btn-cta" id="nextBtn" onclick="changeStep(1)">Next →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-app">
+    <header id="appHeader">
+      <div class="header-left">
+        <div>
+          <div class="orb header-logo">COGNIWISE</div>
+          <div class="mono header-sub">Brain Health Co-Pilot</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="live"><span class="dot"></span>LIVE</div>
+        <button class="btn-ghost" style="padding:8px 14px" onclick="openPitch()">Pitch</button>
+        <button class="top-icon" onclick="setTab('alerts')">🔔<span class="badge-count" id="alertCount">3</span></button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="sidebar">
+        <button class="nav-btn active" data-tab="dashboard" onclick="setTab('dashboard')">⌂</button>
+        <button class="nav-btn" data-tab="hydration" onclick="setTab('hydration')">💧</button>
+        <button class="nav-btn" data-tab="alerts" onclick="setTab('alerts')">⚠</button>
+      </aside>
+      <main class="main">
+        <section class="tab show" id="tab-dashboard">
+          <div class="tab-title">
+            <div>
+              <h2 class="orb">Cognitive Command Center</h2>
+              <p>Your brain signals are fused into a single readiness score so you can see what matters most before the day gets away from you.</p>
+            </div>
+          </div>
+          <div class="dashboard">
+            <div class="score-panel card">
+              <div class="score-status warn" id="scoreStatus">Strained</div>
+              <div class="ring">
+                <svg width="220" height="220" viewBox="0 0 220 220">
+                  <circle class="ring-track" cx="110" cy="110" r="82"></circle>
+                  <circle class="ring-fill" id="ringFill" cx="110" cy="110" r="82"></circle>
+                </svg>
+                <div class="ring-center">
+                  <div class="ring-score" id="scoreValue">74</div>
+                  <div class="ring-sub">CogniScore</div>
+                </div>
+              </div>
+              <div class="ai-box">
+                <div class="lbl">AI Insight</div>
+                <p id="aiInsight">You are functional, but today carries moderate cognitive strain. Sleep is decent, but high load and rising stress reduce your best thinking window.</p>
+              </div>
+              <div class="score-minis">
+                <div class="mini"><div class="l">Recovery</div><div class="v" id="miniRecovery">71%</div></div>
+                <div class="mini"><div class="l">Load Risk</div><div class="v" id="miniLoadRisk">68%</div></div>
+                <div class="mini"><div class="l">Hydration</div><div class="v" id="miniHydration">64%</div></div>
+                <div class="mini"><div class="l">Focus</div><div class="v" id="miniFocus">72%</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="grid-2">
+                <div class="vital card"><div class="head"><div class="lbl">Sleep</div><div class="state ok" id="sleepState">Stable</div></div><div class="value" id="sleepDisplay">7.0h</div><div class="unit">Recovery quality baseline</div></div>
+                <div class="vital card"><div class="head"><div class="lbl">Stress</div><div class="state warn" id="stressState">Elevated</div></div><div class="value" id="stressDisplay">4 / 10</div><div class="unit">Perceived stress</div></div>
+                <div class="vital card"><div class="head"><div class="lbl">Hydration</div><div class="state warn" id="hydrationState">Watch</div></div><div class="value" id="hydrationDisplay">64%</div><div class="unit">Daily target progress</div></div>
+                <div class="vital card"><div class="head"><div class="lbl">Cognitive Load</div><div class="state warn" id="loadState">Busy</div></div><div class="value" id="loadDisplay">7 / 10</div><div class="unit">Calendar + task demand</div></div>
+              </div>
+              <div class="bars card">
+                <div class="bar-row"><div class="l">Sleep Quality</div><div class="track"><div class="fill" id="barSleep" style="width:72%"></div></div><div class="n" id="barSleepNum">72</div></div>
+                <div class="bar-row"><div class="l">Stress Buffer</div><div class="track"><div class="fill green" id="barStress" style="width:60%"></div></div><div class="n" id="barStressNum">60</div></div>
+                <div class="bar-row"><div class="l">Hydration</div><div class="track"><div class="fill amber" id="barHydration" style="width:64%"></div></div><div class="n" id="barHydrationNum">64</div></div>
+                <div class="bar-row"><div class="l">Focus Window</div><div class="track"><div class="fill purple" id="barFocus" style="width:70%"></div></div><div class="n" id="barFocusNum">70</div></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:12px">
+                <div class="card" style="padding:20px">
+                  <div class="mono" style="font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Recommended Interventions</div>
+                  <div class="actions" id="actionsList"></div>
+                </div>
+                <div class="card" style="padding:20px">
+                  <div class="mono" style="font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Priority Alerts</div>
+                  <div class="alerts-list" id="priorityAlerts"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab" id="tab-hydration">
+          <div class="tab-title">
+            <div>
+              <h2 class="orb">Hydration Intelligence</h2>
+              <p>CogniWise turns hydration into a brain-performance tool by showing how much you should have consumed by each part of the day.</p>
+            </div>
+          </div>
+          <div class="hydr-grid">
+            <div class="bottle-card card">
+              <svg class="bottle-svg" id="bottleSvg" width="120" height="250" viewBox="0 0 120 250">
+                <rect x="40" y="10" width="40" height="20" rx="8" fill="#0a1d32" stroke="rgba(0,212,255,.25)"/>
+                <rect x="25" y="28" width="70" height="190" rx="26" fill="#071628" stroke="rgba(0,212,255,.22)" stroke-width="2"/>
+                <clipPath id="bottleClip"><rect x="29" y="32" width="62" height="182" rx="22"/></clipPath>
+                <rect id="bottleFill" x="29" y="110" width="62" height="104" fill="#00d4ff" opacity=".9" clip-path="url(#bottleClip)"></rect>
+              </svg>
+              <div class="bottle-num" id="bottlePercent">57%</div>
+              <div class="bottle-sub">Daily hydration progress</div>
+              <div class="button-row">
+                <button class="pill-btn" onclick="addWater(8)">+ 8 oz</button>
+                <button class="pill-btn" onclick="addWater(16)">+ 16 oz</button>
+                <button class="pill-btn" onclick="addWater(24)">+ 24 oz</button>
+              </div>
+            </div>
+            <div class="panel card">
+              <div class="mono" style="font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Hourly target timeline</div>
+              <p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:14px">For a strong cognitive day, hydration should stay ahead of fatigue — not chase it later.</p>
+              <div class="timeline" id="hydrationTimeline"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab" id="tab-alerts">
+          <div class="tab-title">
+            <div>
+              <h2 class="orb">Alerts & Notifications</h2>
+              <p>Tiered guidance makes the product feel proactive instead of passive.</p>
+            </div>
+          </div>
+          <div class="alert-filters">
+            <button class="filter-chip on" data-filter="all" onclick="setAlertFilter('all', this)">All</button>
+            <button class="filter-chip" data-filter="critical" onclick="setAlertFilter('critical', this)">Critical</button>
+            <button class="filter-chip" data-filter="warning" onclick="setAlertFilter('warning', this)">Warnings</button>
+            <button class="filter-chip" data-filter="info" onclick="setAlertFilter('info', this)">Reminders</button>
+          </div>
+          <div class="alerts-list" id="allAlerts"></div>
+        </section>
+      </main>
+    </div>
+  </section>
+
+  <div id="pitchOverlay">
+    <button class="btn-ghost pitch-close" onclick="closePitch()">Close</button>
+    <div class="pitch-inner">
+      <div class="slide" style="text-align:center;padding-top:30px">
+        <div class="pitch-tag">CogniWise</div>
+        <div class="pitch-h orb">The Brain Health Layer<br>for the Data You Already Have</div>
+        <div class="pitch-p" style="margin:0 auto">Most people already generate sleep, hydration, stress, and schedule data every day. CogniWise connects those signals, translates them into one clear readiness score, and recommends what to do next.</div>
+      </div>
+      <div class="slide">
+        <div class="pitch-tag">Problem</div>
+        <div class="pitch-h orb">The data exists. The intelligence layer does not.</div>
+        <div class="pitch-p">Brain-related strain does not announce itself clearly. The warning signals are scattered across devices and apps, unconnected and unusable in real life.</div>
+        <div class="pitch-grid">
+          <div class="pitch-stat card"><div class="n">Sleep</div><div class="l">Recovery affects focus and emotional regulation.</div></div>
+          <div class="pitch-stat card"><div class="n">Stress</div><div class="l">Pressure shrinks your best thinking window.</div></div>
+          <div class="pitch-stat card"><div class="n">Load</div><div class="l">Calendar density predicts cognitive drain.</div></div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="pitch-tag">Solution</div>
+        <div class="pitch-h orb">A zero-hardware cognitive co-pilot</div>
+        <div class="pitch-grid">
+          <div class="pitch-box card"><h3>Connect</h3><p>Integrate with Apple Health, Fitbit, Google Calendar, and hydration tools.</p></div>
+          <div class="pitch-box card"><h3>Check-In</h3><p>Use a 90-second adaptive survey to fill in subjective signals.</p></div>
+          <div class="pitch-box card"><h3>Act</h3><p>Trigger tiered interventions before performance collapses.</p></div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="pitch-tag">Why it wins</div>
+        <div class="pitch-h orb">It feels real, useful, and immediate.</div>
+        <div class="pitch-p">This MVP already shows onboarding, assessment, scoring, action logic, hydration planning, and notifications — enough to demonstrate strong product instincts, clear differentiation, and startup potential.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      step: 0,
+      sleepQuality: 7,
+      hydration: 7,
+      activity: 5,
+      alertsFilter: 'all',
+      waterOz: 46,
+      waterTarget: 80,
+      alerts: [
+        { type: 'critical', title: 'High cognitive load today', msg: 'Your schedule density and low recovery suggest reduced attention by mid-afternoon.' },
+        { type: 'warning', title: 'Hydration below target', msg: 'You are behind today\'s recommended hydration curve.' },
+        { type: 'info', title: 'Protect your focus window', msg: 'Front-load your hardest task before meetings stack up.' }
+      ]
+    };
+
+    const pages = ['page-landing','page-login','page-q','page-app'];
+    function showPage(id){
+      pages.forEach(p => document.getElementById(p).classList.remove('show'));
+      document.getElementById(id).classList.add('show');
+      if(id === 'page-app') renderApp();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function openPitch(){ document.getElementById('pitchOverlay').classList.add('show'); }
+    function closePitch(){ document.getElementById('pitchOverlay').classList.remove('show'); }
+
+    document.querySelectorAll('.opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.dataset.group;
+        document.querySelectorAll(`.opt[data-group="${group}"]`).forEach(x => x.classList.remove('on'));
+        btn.classList.add('on');
+        state[group] = Number(btn.dataset.value);
+      });
+    });
+
+    ['sleepHours','energy','stress','load','focus'].forEach(id => {
+      const el = document.getElementById(id);
+      const out = document.getElementById(id+'Val');
+      el.addEventListener('input', () => out.textContent = el.value);
+    });
+
+    function renderProgress(){
+      const prog = document.getElementById('prog');
+      prog.innerHTML = '';
+      for(let i=0;i<4;i++){
+        const d = document.createElement('div');
+        if(i <= state.step) d.classList.add('on');
+        prog.appendChild(d);
+      }
+      document.getElementById('stepCount').textContent = `Step ${state.step+1} of 4`;
+      document.getElementById('stepName').textContent = ['Sleep','Energy','Physical','Load'][state.step];
+      document.querySelectorAll('.qstep').forEach((q, i) => q.classList.toggle('show', i === state.step));
+      document.getElementById('prevBtn').style.visibility = state.step === 0 ? 'hidden' : 'visible';
+      document.getElementById('nextBtn').textContent = state.step === 3 ? 'Generate Score →' : 'Next →';
+    }
+
+    function changeStep(dir){
+      if(dir === 1 && state.step === 3){
+        showPage('page-app');
+        return;
+      }
+      state.step = Math.max(0, Math.min(3, state.step + dir));
+      renderProgress();
+    }
+    renderProgress();
+
+    function getMetrics(){
+      const sleepHours = Number(document.getElementById('sleepHours').value);
+      const energy = Number(document.getElementById('energy').value);
+      const stress = Number(document.getElementById('stress').value);
+      const load = Number(document.getElementById('load').value);
+      const focus = Number(document.getElementById('focus').value);
+      const sleepNorm = Math.min(100, Math.round((sleepHours / 8) * 70 + state.sleepQuality * 3));
+      const stressBuffer = Math.max(0, 100 - stress * 8);
+      const hydrationPct = Math.min(100, Math.round((state.hydration * 10 + (state.waterOz / state.waterTarget) * 30)));
+      const focusPct = Math.min(100, Math.round((focus * 8) + (energy * 2)));
+      const loadRisk = Math.min(100, Math.round(load * 10));
+      const score = Math.round(
+        sleepNorm * 0.28 +
+        (energy * 10) * 0.18 +
+        stressBuffer * 0.18 +
+        hydrationPct * 0.14 +
+        (100 - loadRisk) * 0.14 +
+        focusPct * 0.08
+      );
+      return { sleepHours, energy, stress, load, focus, sleepNorm, stressBuffer, hydrationPct, focusPct, loadRisk, score };
+    }
+
+    function ringColor(score){
+      if(score >= 80) return getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+      if(score >= 60) return getComputedStyle(document.documentElement).getPropertyValue('--amber').trim();
+      return getComputedStyle(document.documentElement).getPropertyValue('--red').trim();
+    }
+
+    function insightText(m){
+      if(m.score < 60) return 'Your brain is carrying too much strain for a high-quality day. Reduce switching, hydrate early, and protect decision-making.';
+      if(m.stress >= 7 && m.load >= 7) return 'You are entering an overload pattern. High schedule pressure plus rising stress is compressing your focus window.';
+      if(m.hydrationPct < 55) return 'Hydration is the easiest lever to improve right now. A physical reset may raise clarity faster than pushing harder.';
+      if(m.score >= 80) return 'Your signals are aligned. This is a strong day for deep work, strategic thinking, and important decisions.';
+      return 'You are functional, but today carries moderate cognitive strain. Sleep is decent, but high load and rising stress reduce your best thinking window.';
+    }
+
+    function actionItems(m){
+      const items = [];
+      if(m.hydrationPct < 60) items.push({t:'Hydrate now', d:'Drink 12–16 oz of water in the next 20 minutes to recover some mental sharpness.', tag:'Recovery'});
+      if(m.stress >= 7) items.push({t:'Run a 1-minute breathing reset', d:'Box breathing can lower physiological strain before your next demanding task.', tag:'Stress'});
+      if(m.load >= 7) items.push({t:'Reduce context switching', d:'Batch communication and protect one uninterrupted focus block this morning.', tag:'Focus'});
+      if(m.sleepNorm < 65) items.push({t:'Protect decision energy', d:'Delay your most complex choice until after a break, food, or movement.', tag:'Sleep'});
+      if(items.length === 0) items.push({t:'Use your sharp window', d:'This is a good day for writing, analysis, planning, and other high-focus work.', tag:'Performance'});
+      return items.slice(0,3);
+    }
+
+    function renderApp(){
+      const m = getMetrics();
+      const c = 2 * Math.PI * 82;
+      const offset = c - (m.score / 100) * c;
+      const fill = document.getElementById('ringFill');
+      fill.style.strokeDasharray = c;
+      fill.style.strokeDashoffset = offset;
+      fill.style.stroke = ringColor(m.score);
+      document.getElementById('scoreValue').textContent = m.score;
+      document.getElementById('aiInsight').textContent = insightText(m);
+
+      const scoreStatus = document.getElementById('scoreStatus');
+      scoreStatus.className = 'score-status ' + (m.score >= 80 ? 'ok' : m.score >= 60 ? 'warn' : 'crit');
+      scoreStatus.textContent = m.score >= 80 ? 'Sharp' : m.score >= 60 ? 'Strained' : 'Overloaded';
+
+      document.getElementById('miniRecovery').textContent = `${m.sleepNorm}%`;
+      document.getElementById('miniLoadRisk').textContent = `${m.loadRisk}%`;
+      document.getElementById('miniHydration').textContent = `${m.hydrationPct}%`;
+      document.getElementById('miniFocus').textContent = `${m.focusPct}%`;
+
+      document.getElementById('sleepDisplay').textContent = `${m.sleepHours.toFixed(1)}h`;
+      document.getElementById('stressDisplay').textContent = `${m.stress} / 10`;
+      document.getElementById('hydrationDisplay').textContent = `${m.hydrationPct}%`;
+      document.getElementById('loadDisplay').textContent = `${m.load} / 10`;
+
+      document.getElementById('sleepState').textContent = m.sleepNorm >= 75 ? 'Strong' : m.sleepNorm >= 60 ? 'Stable' : 'Low';
+      document.getElementById('sleepState').className = 'state ' + (m.sleepNorm >= 75 ? 'ok' : m.sleepNorm >= 60 ? 'warn' : 'crit');
+      document.getElementById('stressState').textContent = m.stress <= 4 ? 'Controlled' : m.stress <= 6 ? 'Elevated' : 'High';
+      document.getElementById('stressState').className = 'state ' + (m.stress <= 4 ? 'ok' : m.stress <= 6 ? 'warn' : 'crit');
+      document.getElementById('hydrationState').textContent = m.hydrationPct >= 75 ? 'On Track' : m.hydrationPct >= 55 ? 'Watch' : 'Low';
+      document.getElementById('hydrationState').className = 'state ' + (m.hydrationPct >= 75 ? 'ok' : m.hydrationPct >= 55 ? 'warn' : 'crit');
+      document.getElementById('loadState').textContent = m.load <= 4 ? 'Light' : m.load <= 7 ? 'Busy' : 'Heavy';
+      document.getElementById('loadState').className = 'state ' + (m.load <= 4 ? 'ok' : m.load <= 7 ? 'warn' : 'crit');
+
+      const setBar = (id, numId, val) => {
+        document.getElementById(id).style.width = `${val}%`;
+        document.getElementById(numId).textContent = Math.round(val);
+      };
+      setBar('barSleep','barSleepNum',m.sleepNorm);
+      setBar('barStress','barStressNum',m.stressBuffer);
+      setBar('barHydration','barHydrationNum',m.hydrationPct);
+      setBar('barFocus','barFocusNum',m.focusPct);
+
+      const acts = actionItems(m);
+      document.getElementById('actionsList').innerHTML = acts.map(a => `<div class="action"><h4>${a.t}</h4><p>${a.d}</p><span class="tag">${a.tag}</span></div>`).join('');
+      document.getElementById('priorityAlerts').innerHTML = state.alerts.slice(0,3).map(a => `<div class="alert"><h4>${a.title}</h4><p>${a.msg}</p><span class="tag">${a.type}</span></div>`).join('');
+      renderHydration();
+      renderAlerts();
+    }
+
+    function setTab(name){
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('show'));
+      document.getElementById('tab-' + name).classList.add('show');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    }
+
+    function addWater(oz){
+      state.waterOz = Math.min(state.waterTarget, state.waterOz + oz);
+      renderHydration();
+      renderApp();
+    }
+
+    function renderHydration(){
+      const pct = Math.round((state.waterOz / state.waterTarget) * 100);
+      document.getElementById('bottlePercent').textContent = `${pct}%`;
+      const fillHeight = Math.max(18, Math.round(182 * (pct / 100)));
+      document.getElementById('bottleFill').setAttribute('y', 214 - fillHeight);
+      document.getElementById('bottleFill').setAttribute('height', fillHeight);
+      const targets = [
+        ['9 AM', 'Drink 12 oz before meetings', pct >= 20],
+        ['11 AM', 'Reach 24 oz total', pct >= 35],
+        ['1 PM', 'Hit 40 oz by midday', pct >= 50],
+        ['3 PM', 'Stay ahead of fatigue', pct >= 70],
+        ['6 PM', 'Finish 80 oz goal', pct >= 100]
+      ];
+      document.getElementById('hydrationTimeline').innerHTML = targets.map(([t,x,met]) => `<div class="tl"><div class="t">${t}</div><div class="x">${x}</div><div class="dot ${met ? 'met' : ''}"></div></div>`).join('');
+    }
+
+    function setAlertFilter(filter, btn){
+      state.alertsFilter = filter;
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      renderAlerts();
+    }
+
+    function renderAlerts(){
+      const alerts = state.alertsFilter === 'all' ? state.alerts : state.alerts.filter(a => a.type === state.alertsFilter);
+      document.getElementById('allAlerts').innerHTML = alerts.map(a => `<div class="alert"><h4>${a.title}</h4><p>${a.msg}</p><span class="tag">${a.type}</span></div>`).join('') || '<div class="alert"><h4>No alerts</h4><p>Nothing in this category right now.</p></div>';
+      document.getElementById('alertCount').textContent = state.alerts.length;
+    }
+
+    renderHydration();
+  </script>
+</body>
+</html>
